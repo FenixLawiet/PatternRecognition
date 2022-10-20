@@ -9,5 +9,5 @@ Agregar las dependencias en el arhivo POM.xml. Agregar justo después del packin
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.0.19</version>
-        </dependency>
-    </dependencies>
+     </dependency>
+</dependencies>
