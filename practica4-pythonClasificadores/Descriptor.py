@@ -37,10 +37,14 @@ class Descriptor:
         self.dimension = dimension
         self.vector = np.zeros((int(dimension), int(repClases)))        
         while True:
-            self.coorx = input("\nIngresa la coordenada x del centroide de la clase "+str(numClase+1)+": ")
-            self.coory = input("\nIngresa la coordenada y del centroide de la clase "+str(numClase+1)+": ")
-            self.coorz=0
+            if dimension==1:
+                self.coorx = input("\nIngresa la coordenada x del centroide de la clase "+str(numClase+1)+": ")
+            if dimension==2:
+                self.coorx = input("\nIngresa la coordenada x del centroide de la clase "+str(numClase+1)+": ")
+                self.coory = input("\nIngresa la coordenada y del centroide de la clase "+str(numClase+1)+": ")
             if dimension==3:
+                self.coorx = input("\nIngresa la coordenada x del centroide de la clase "+str(numClase+1)+": ")
+                self.coory = input("\nIngresa la coordenada y del centroide de la clase "+str(numClase+1)+": ")
                 self.coorz = input("\nIngresa la coordenada z del centroide de la clase "+str(numClase+1)+": ")
             
             self.disp = input("\nIngresa la dispersión de la clase "+str(numClase+1)+": ")
