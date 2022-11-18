@@ -15,6 +15,10 @@ import MediaDescriptor
 
 class Clasificadores:
 
+    def __init__(self):
+        maxClase = 1
+        minClase = 1
+    
     #Método que grafica las clases y el punto a encontrar
     def graficaClases(self, conjuntoClases, coorx, coory, coorz):
         # Creamos la figura
@@ -87,13 +91,12 @@ class Clasificadores:
 
         #Obteniendo la distancia mínima
         minimo = distClase[0]
-        minClase = 1
         for i in range(len(distClase)):
             if minimo > distClase[i]:
                 minimo = distClase[i]
-                minClase = i+1
+                self.minClase = i+1
 
-        print("El vector (",coorx, ", ",coory,", ",coorz,") pertenece a la clase ", minClase)
+        print("El vector (",coorx, ", ",coory,", ",coorz,") pertenece a la clase ", self.minClase)
 
 
     #Método de clasificación por distancia de Mahalanobis
@@ -178,13 +181,12 @@ class Clasificadores:
 
         #Obteniendo la distancia mínima
         minimo = distClase[0]
-        minClase = 1
         for i in range(len(distClase)):
             if minimo > distClase[i]:
                 minimo = distClase[i]
-                minClase = i+1
+                self.minClase = i+1
 
-        print(f"El vector ({coorx}, {coory}, {coorz}) pertenece a la clase {minClase}")    
+        print(f"El vector ({coorx}, {coory}, {coorz}) pertenece a la clase {self.minClase}")    
 
     #Método de clasificación por teorema de bayes
     def metodoBayes(self, conjuntoClases, coorx, coory, coorz):
@@ -298,13 +300,12 @@ class Clasificadores:
 
         #Obteniendo la probabilidad máxima
         maximo = probabilidades[0]
-        maxClase = 1
         for i in range(len(probabilidades)):
             if maximo < probabilidades[i]:
                 maximo = probabilidades[i]
-                maxClase = i+1
+                self.maxClase = i+1
 
-        print(f"El vector ({coorx}, {coory}, {coorz}) es más probable que pertenezca a la clase {maxClase}")
+        print(f"El vector ({coorx}, {coory}, {coorz}) es más probable que pertenezca a la clase {self.maxClase}")
 
 #************************Para pruebas**********************************
 """
