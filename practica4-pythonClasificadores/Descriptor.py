@@ -109,16 +109,3 @@ class Descriptor:
             for j in range(len(self.vector[0])):
                 print(self.vector[i][j], sep=', ')  
             print("\n")"""
-
-#*********************************Para pruebas*********************************************
-
-"""
-pruebaC = int(input("Ingrese la cantidad de clases: "))
-pruebaR = int(input("Ingrese la cantidad de representates de clase: "))
-pruebaD = int(input("Ingrese la dimensión de la clase: "))
-x = Descriptor()
-for i in range(pruebaC):
-    print("\n************Clase ",(i+1),"************\n")
-    x.crearDescriptor1(i, pruebaR, pruebaD)
-    x.imprimeDescriptor()                                   
-"""

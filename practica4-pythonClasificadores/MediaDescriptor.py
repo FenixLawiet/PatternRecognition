@@ -57,17 +57,4 @@ class MediaDescriptor:
     #Método para imprimir la matriz de la media
     def imprimirMedia(self):
         print(self.media)
-
-#******************************Para pruebas***************************************
-"""
-pruebaR = int(input("Ingrese la cantidad de representates de clase: "))
-x = Descriptor.Descriptor()
-
-x.crearDescriptor1(0, pruebaR, 3)
-x.imprimeDescriptor()     
-
-auxMedia = MediaDescriptor(x.dimension)
-auxMedia.calculoMedia(pruebaR, x)
-print("\nLa media de la clase es: ")
-auxMedia.imprimirMedia()       
-"""            
+         
