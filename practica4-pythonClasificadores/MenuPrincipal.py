@@ -30,6 +30,7 @@ selector4 = "y"
 
 print("***********************SISTEMA DE CLASIFICADORES********************")
 print("UMBRAL MÁXIMO DE PERTENENCIA DE -100 A 100 EN LOS 3 EJES")
+print("Nota: No se puede gráficar en más de 3 dimensiones")
 while True:
 
     numClases = int(input("Ingrese la cantidad de clases: "))
