@@ -63,12 +63,12 @@ class Descriptor:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
                 if i==1 :
                     if i==1 and j==0:
-                        self.vector[i][j]=self.coory
+                        self.vector[i][j]=int(self.coory)
                     else:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
                 if i==2 :
                     if i==2 and j==0:
-                        self.vector[i][j]=self.coorz
+                        self.vector[i][j]=int(self.coorz)
                     else:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))    
 
@@ -87,17 +87,17 @@ class Descriptor:
             for j in range(self.repClases):
                 if i==0 :
                     if i==0 and j==0:
-                        self.vector[i][j]=self.coorx
+                        self.vector[i][j]=int(self.coorx)
                     else:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
                 if i==1 :
                     if i==1 and j==0:
-                        self.vector[i][j]=self.coory
+                        self.vector[i][j]=int(self.coory)
                     else:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
                 if i==2 :
                     if i==2 and j==0:
-                        self.vector[i][j]=self.coorz
+                        self.vector[i][j]=int(self.coorz)
                     else:
                         self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))                
 

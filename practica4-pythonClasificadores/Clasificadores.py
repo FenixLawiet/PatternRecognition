@@ -363,8 +363,7 @@ class Clasificadores:
     def metodoMahalanobis2(self, conjuntoClases, coorx, coory, coorz):
         conjuntoMedias = []
         distClase = []
-
-        """ 
+        """
         #Imprime las clases del conjunto
         for i in range(len(conjuntoClases)):
             print("***********Clase ", (i+1),"***********")

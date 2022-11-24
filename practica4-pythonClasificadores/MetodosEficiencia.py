@@ -19,46 +19,62 @@ class MetodosEficiencia:
     def __init__(self):
         self.matrizConf = np.zeros((1, 1))
         self.presicion = []
+        self.sumarepClases = []
 
     def matrizConfusion(self, conjuntoClases, selectorMetodoC, selectorMetodoE):
         #Creando las clases de prueba, con la misma cantidad de representantes de clases y centroides
         conjuntoTest = []
         conjuntoClasesCross = []
-        auxClasesCross = Descriptor.Descriptor()
         mitadRep = 0
         coorrandom = 0
-        auxClase = Descriptor.Descriptor()
         self.matrizConf = np.zeros((len(conjuntoClases), len(conjuntoClases)))
-        
+
+        for i in range(len(conjuntoClases)):
+            self.sumarepClases.append(0)
+
         #Para restitución
         for i in range(len(conjuntoClases)):
+            auxClase = Descriptor.Descriptor()
+            #print(f"\nValores de clase {i+1}")
             coorx = conjuntoClases[i].coorx
+            #print(f"Coor x = {coorx}")
             coory = conjuntoClases[i].coory
+            #print(f"Coor y = {coory}")
             coorz = conjuntoClases[i].coorz
+            #print(f"Coor z = {coorz}")
             disp = conjuntoClases[i].disp
+            #print(f"Dispersion = {disp}")
             repClases = conjuntoClases[i].repClases
+            #print(f"Representantes = {repClases}")
             dimension = conjuntoClases[i].dimension
+            #print(f"Dimension = {dimension}")
             auxClase.crearDescriptor2(coorx, coory, coorz, disp, repClases, dimension)
+            #auxClase.imprimeDescriptor()
             conjuntoTest.append(auxClase)
 
         #Para cross validation
         if (conjuntoClases[0].repClases % 2) == 0:    
-            mitadRep = conjuntoClases[0].repClases / 2
+            mitadRep = (conjuntoClases[0].repClases) / 2
         else:
-            mitadRep = (conjuntoClases[0].repClases / 2) + 0.5
+            mitadRep = ((conjuntoClases[0].repClases) / 2) + 0.5
 
-        auxClasesCross.vector = np.zeros((conjuntoClases[0].dimension, int(mitadRep)))
         for i in range(len(conjuntoClases)):
+            auxClasesCross = Descriptor.Descriptor()
+            auxClasesCross.vector = np.zeros((conjuntoClases[0].dimension, int(mitadRep)))
+            auxClasesCross.repClases = int(mitadRep)
+            auxClasesCross.dimension = conjuntoClases[0].dimension
+        
             for j in range(int(mitadRep)):
-                if conjuntoClases[i].dimension == 1:
+                if auxClasesCross.dimension == 1:
                     auxClasesCross.vector[0][j] = conjuntoClases[i].vector[0][j]
-                if conjuntoClases[i].dimension == 2:
+                if auxClasesCross.dimension == 2:
                     auxClasesCross.vector[0][j] = conjuntoClases[i].vector[0][j]
                     auxClasesCross.vector[1][j] = conjuntoClases[i].vector[1][j]
-                if conjuntoClases[i].dimension == 3:
+                if auxClasesCross.dimension == 3:
                     auxClasesCross.vector[0][j] = conjuntoClases[i].vector[0][j]
                     auxClasesCross.vector[1][j] = conjuntoClases[i].vector[1][j]
                     auxClasesCross.vector[2][j] = conjuntoClases[i].vector[2][j]              
+            
             conjuntoClasesCross.append(auxClasesCross)
 
         #Para hold in one. Tomando solo una coordenada ALEATORIA por clase al clasificar
@@ -70,6 +86,10 @@ class MetodosEficiencia:
         xAux = 0
         yAux = 0
         zAux = 0
+        for i in range(len(conjuntoTest)):
+            print(f"*************CLASE TEST {i+1}*************")
+            print(conjuntoTest[i].imprimeDescriptor())
+            print("\n")
         if selectorMetodoE == 1:
             #Método de restitución ********************************************************
             if selectorMetodoC == 1:
@@ -82,20 +102,20 @@ class MetodosEficiencia:
                             clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1 
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1   
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")    
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1    
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -104,10 +124,10 @@ class MetodosEficiencia:
                             clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
            
            
             if selectorMetodoC == 2:
@@ -120,20 +140,20 @@ class MetodosEficiencia:
                             clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1  
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")    
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1    
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -142,10 +162,10 @@ class MetodosEficiencia:
                             clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
 
             if selectorMetodoC == 3:
                 #Clasificador bayesiano
@@ -157,20 +177,20 @@ class MetodosEficiencia:
                             clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")  
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1  
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -179,10 +199,10 @@ class MetodosEficiencia:
                             clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")   
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1   
 
         if selectorMetodoE == 2:
             #Método de cross validation (se clasifican solo la mitad) ********************************************
@@ -196,20 +216,20 @@ class MetodosEficiencia:
                             clasificador.metodoEuclides2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}") 
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1 
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoEuclides2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1   
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -218,10 +238,10 @@ class MetodosEficiencia:
                             clasificador.metodoEuclides2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
            
            
             if selectorMetodoC == 2:
@@ -234,20 +254,20 @@ class MetodosEficiencia:
                             clasificador.metodoMahalanobis2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoMahalanobis2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -256,10 +276,10 @@ class MetodosEficiencia:
                             clasificador.metodoMahalanobis2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.minClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
 
             if selectorMetodoC == 3:
                 #Clasificador bayesiano
@@ -271,20 +291,20 @@ class MetodosEficiencia:
                             clasificador.metodoBayes2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                         if conjuntoTest[i].dimension == 2:
                             xAux = conjuntoTest[i].vector[0][j]
                             yAux = conjuntoTest[i].vector[1][j]
                             clasificador.metodoBayes2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1 
-                                print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                         if conjuntoTest[i].dimension == 3:
                             xAux = conjuntoTest[i].vector[0][j]
@@ -293,10 +313,10 @@ class MetodosEficiencia:
                             clasificador.metodoBayes2(conjuntoClasesCross, xAux, yAux, zAux)
                             if clasificador.maxClase == (i+1):
                                 self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
                             else:
                                 self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1
-                                print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
 
         if selectorMetodoE == 3:
             #Método de hold in one *********************************************************
@@ -309,20 +329,20 @@ class MetodosEficiencia:
                         clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                     if conjuntoTest[i].dimension == 2:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
                         yAux = conjuntoTest[i].vector[1][coorrandom]
                         clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                     if conjuntoTest[i].dimension == 3:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
@@ -331,10 +351,10 @@ class MetodosEficiencia:
                         clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
 
             if selectorMetodoC == 2:
                 #Clasificador de mahalanobis
@@ -345,20 +365,20 @@ class MetodosEficiencia:
                         clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                     if conjuntoTest[i].dimension == 2:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
                         yAux = conjuntoTest[i].vector[1][coorrandom]
                         clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                     if conjuntoTest[i].dimension == 3:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
@@ -367,10 +387,10 @@ class MetodosEficiencia:
                         clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.minClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
             if selectorMetodoC == 3:
                 #Clasificador bayesiano
                 clasificador = Clasificadores.Clasificadores()
@@ -380,20 +400,20 @@ class MetodosEficiencia:
                         clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.maxClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1 
-                            print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                     if conjuntoTest[i].dimension == 2:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
                         yAux = conjuntoTest[i].vector[1][coorrandom]
                         clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.maxClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
-                            print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                             
                     if conjuntoTest[i].dimension == 3:
                         xAux = conjuntoTest[i].vector[0][coorrandom]
@@ -402,21 +422,19 @@ class MetodosEficiencia:
                         clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
                         if clasificador.maxClase == (i+1):
                             self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            print(f"Valor de minClase/maxClase = {clasificador.maxClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
                         else:
                             self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
-                            print(f"Valor de minClase/maxClase = {clasificador.minClase}")
+                            self.sumarepClases[i] = self.sumarepClases[i] + 1
 
         #Normalizando las presiciones
         print("\n***********MATRIZ DE CONFUSIÓN***********")
-        #yolo = MetodosEficiencia()
         print(self.matrizConf)
-        #yolo.imprimirMatrizC()
         auxPre = 0
         for i in range(len(conjuntoClases)):
             for j in range(len(conjuntoClases)):
                 if i==j:
-                    auxPre=self.matrizConf[i][j]/repClases
+                    auxPre=self.matrizConf[i][j]/self.sumarepClases[i]
                     self.presicion.append(auxPre*100)
                     print(f"La precisión de en la clase {(i+1)} fue de: {self.presicion[i]}%")
 

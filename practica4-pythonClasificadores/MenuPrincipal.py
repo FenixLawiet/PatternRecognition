@@ -35,7 +35,7 @@ while True:
     numClases = int(input("Ingrese la cantidad de clases: "))
     numRepClases = int(input("Ingrese la cantidad de representates de clase: "))
     numDimension = int(input("Ingrese la dimensión de la clase: "))
-    if (numClases <= 0) or (numRepClases <= 10) or (numDimension <= 0) or (numDimension >= 3):
+    if (numClases <= 0) or (numRepClases <= 10) or (numDimension <= 0) or (numDimension > 3):
         print("ERROR. Uno o más datos incorrectos o insuficientes. Ingrese nuevamente")
     else:
         for i in range(numClases):
