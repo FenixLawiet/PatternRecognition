@@ -48,7 +48,7 @@ class Descriptor:
                 self.coorz = input("\nIngresa la coordenada z del centroide de la clase "+str(numClase+1)+": ")
             
             self.disp = input("\nIngresa la dispersión de la clase "+str(numClase+1)+": ")
-            if (int(self.coorx)>=100) or (int(self.coory)>=100) or (int(self.coorz)>=100) or (int(self.coorx)<=-100) or (int(self.coory)<=-100) or (int(self.coorz)<=-100) or (int(self.disp)<=0):
+            if (int(self.coorx)>100) or (int(self.coory)>100) or (int(self.coorz)>100) or (int(self.coorx)<-100) or (int(self.coory)<-100) or (int(self.coorz)<-100) or (int(self.disp)<=0):
                 print("\n*******ERROR. Uno o más datos no válidos. Reingrese datos*******")
             else:
                 break    

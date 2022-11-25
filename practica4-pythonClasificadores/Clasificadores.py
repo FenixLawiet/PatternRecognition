@@ -12,6 +12,7 @@ from math import *
 import random as r
 import Descriptor
 import MediaDescriptor
+import copy
 
 class Clasificadores:
 
@@ -101,20 +102,21 @@ class Clasificadores:
 
     #Método de clasificación por distancia de Mahalanobis
     def metodoMahalanobis(self, conjuntoClases, coorx, coory, coorz):
+        auxConjuntoClases = copy.deepcopy(conjuntoClases)
         conjuntoMedias = []
         distClase = []
         
         #Imprime las clases del conjunto
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             print("***********Clase ", (i+1),"***********")
-            conjuntoClases[i].imprimeDescriptor()
+            auxConjuntoClases[i].imprimeDescriptor()
             print("\n")
 
-        auxMedia = MediaDescriptor.MediaDescriptor(conjuntoClases[0].dimension) 
+        auxMedia = MediaDescriptor.MediaDescriptor(auxConjuntoClases[0].dimension) 
 
         #Calcula e imprime las medias por cada clases
-        for i in range(len(conjuntoClases)):
-            auxMedia.calculoMedia(conjuntoClases[0].repClases, conjuntoClases[i])
+        for i in range(len(auxConjuntoClases)):
+            auxMedia.calculoMedia(auxConjuntoClases[0].repClases, auxConjuntoClases[i])
             print("***********Media de clase ", (i+1),"***********")
             auxMedia.imprimirMedia()
             conjuntoMedias.append(auxMedia.media)
@@ -125,32 +127,42 @@ class Clasificadores:
         covarianzas = []
         arregloRestas = []
         arregloTranspuestas = []
-        restaClase = conjuntoClases[0]
+        restaClase = auxConjuntoClases[0]
 
-        for i in range(len(conjuntoClases)):
-            for j in range(conjuntoClases[0].repClases):
-                if conjuntoClases[0].dimension == 1:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i]
+        auxVX = 0
+        auxVY = 0
+        auxVZ = 0
+        
+        for i in range(len(auxConjuntoClases)):
+            for j in range(auxConjuntoClases[0].repClases):
+                if auxConjuntoClases[0].dimension == 1:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    restaClase.vector[0][j] =  auxVX - conjuntoMedias[i]
                     continue
-                if conjuntoClases[0].dimension == 2:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
+                if auxConjuntoClases[0].dimension == 2:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
                     continue
-                if conjuntoClases[0].dimension == 3:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
-                    restaClase.vector[2][j] = conjuntoClases[i].vector[2][j] - conjuntoMedias[i][2][0] 
+                if auxConjuntoClases[0].dimension == 3:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    auxVZ = auxConjuntoClases[i].vector[2][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
+                    restaClase.vector[2][j] = auxVZ - conjuntoMedias[i][2][0] 
             arregloRestas.append(restaClase.vector)
             arregloTranspuestas.append(np.transpose(restaClase.vector))
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxVarianza = np.matmul(arregloRestas[i], arregloTranspuestas[i])
             varianzas.append(auxVarianza)
             print(f"****VARIANZA {i+1}****")
             print(varianzas[i])
             print("\n")
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxCovarianza = np.linalg.inv(varianzas[i])
             covarianzas.append(auxCovarianza)
             print(f"****COVARIANZA {i+1}****")
@@ -159,11 +171,11 @@ class Clasificadores:
 
         #Calculando la distancia de mahalanobis 
         auxMult = np.zeros((1, 1))
-        auxVector = np.zeros((conjuntoClases[0].dimension, 1))
-        auxVectorTrans = np.zeros((1, conjuntoClases[0].dimension))
+        auxVector = np.zeros((auxConjuntoClases[0].dimension, 1))
+        auxVectorTrans = np.zeros((1, auxConjuntoClases[0].dimension))
 
-        for i in range(len(conjuntoClases)):
-            if conjuntoClases[0].dimension == 1:
+        for i in range(len(auxConjuntoClases)):
+            if auxConjuntoClases[0].dimension == 1:
                 auxVector[0][0] = coorx - conjuntoMedias[i]
             if conjuntoClases[0].dimension == 2:
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
@@ -195,19 +207,20 @@ class Clasificadores:
         requiere que realizar nuevamente el cálculo de la varianza
         y la covarianza, el primer paso repite el método de Mahalanobis
         """
+        auxConjuntoClases = copy.deepcopy(conjuntoClases)
         conjuntoMedias = []
         
         #Imprime las clases del conjunto
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             print("***********Clase ", (i+1),"***********")
-            conjuntoClases[i].imprimeDescriptor()
+            auxConjuntoClases[i].imprimeDescriptor()
             print("\n")
 
-        auxMedia = MediaDescriptor.MediaDescriptor(conjuntoClases[0].dimension) 
+        auxMedia = MediaDescriptor.MediaDescriptor(auxConjuntoClases[0].dimension) 
 
         #Calcula e imprime las medias por cada clases
-        for i in range(len(conjuntoClases)):
-            auxMedia.calculoMedia(conjuntoClases[0].repClases, conjuntoClases[i])
+        for i in range(len(auxConjuntoClases)):
+            auxMedia.calculoMedia(auxConjuntoClases[0].repClases, auxConjuntoClases[i])
             print("***********Media de clase ", (i+1),"***********")
             auxMedia.imprimirMedia()
             conjuntoMedias.append(auxMedia.media)
@@ -218,32 +231,42 @@ class Clasificadores:
         covarianzas = []
         arregloRestas = []
         arregloTranspuestas = []
-        restaClase = conjuntoClases[0]
+        restaClase = auxConjuntoClases[0]
 
-        for i in range(len(conjuntoClases)):
-            for j in range(conjuntoClases[0].repClases):
-                if conjuntoClases[0].dimension == 1:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i]
+        auxVX = 0
+        auxVY = 0
+        auxVZ = 0
+
+        for i in range(len(auxConjuntoClases)):
+            for j in range(auxConjuntoClases[0].repClases):
+                if auxConjuntoClases[0].dimension == 1:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    restaClase.vector[0][j] =  auxVX - conjuntoMedias[i]
                     continue
-                if conjuntoClases[0].dimension == 2:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
+                if auxConjuntoClases[0].dimension == 2:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
                     continue
                 if conjuntoClases[0].dimension == 3:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
-                    restaClase.vector[2][j] = conjuntoClases[i].vector[2][j] - conjuntoMedias[i][2][0] 
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    auxVZ = auxConjuntoClases[i].vector[2][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
+                    restaClase.vector[2][j] = auxVZ - conjuntoMedias[i][2][0] 
             arregloRestas.append(restaClase.vector)
             arregloTranspuestas.append(np.transpose(restaClase.vector))
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxVarianza = np.matmul(arregloRestas[i], arregloTranspuestas[i])
             varianzas.append(auxVarianza)
             print(f"****VARIANZA {i+1}****")
             print(varianzas[i])
             print("\n")
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxCovarianza = np.linalg.inv(varianzas[i])
             covarianzas.append(auxCovarianza)
             print(f"****COVARIANZA {i+1}****")
@@ -252,17 +275,17 @@ class Clasificadores:
 
         #Calculando el exponencial de mahalanobis
         auxMult = np.zeros((1, 1))
-        auxVector = np.zeros((conjuntoClases[0].dimension, 1))
-        auxVectorTrans = np.zeros((1, conjuntoClases[0].dimension))
+        auxVector = np.zeros((auxConjuntoClases[0].dimension, 1))
+        auxVectorTrans = np.zeros((1, auxConjuntoClases[0].dimension))
         expMaha = []
 
-        for i in range(len(conjuntoClases)):
-            if conjuntoClases[0].dimension == 1:
+        for i in range(len(auxConjuntoClases)):
+            if auxConjuntoClases[0].dimension == 1:
                 auxVector[0][0] = coorx - conjuntoMedias[i]
-            if conjuntoClases[0].dimension == 2:
+            if auxConjuntoClases[0].dimension == 2:
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
                 auxVector[1][0] = coory - conjuntoMedias[i][1][0]
-            if conjuntoClases[0].dimension == 3:     
+            if auxConjuntoClases[0].dimension == 3:     
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
                 auxVector[1][0] = coory - conjuntoMedias[i][1][0]
                 auxVector[2][0] = coorz - conjuntoMedias[i][2][0]
@@ -275,14 +298,14 @@ class Clasificadores:
         numerador = []
         denominador = []
         #Elevando constante e al exponente de mahalnobis
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             numerador.append(exp(expMaha[i])) 
 
         #Calculando el denominador       
         auxDen1 = 0
         auxDen2 = 0
-        for i in range((len(conjuntoClases))):
-            auxDen1 = pow((2*np.pi), ((conjuntoClases[0].dimension)/2))
+        for i in range((len(auxConjuntoClases))):
+            auxDen1 = pow((2*np.pi), ((auxConjuntoClases[0].dimension)/2))
             auxDen2 = pow(np.linalg.det(varianzas[i]), 0.5)
             denominador.append(auxDen1*auxDen2)
 
@@ -361,20 +384,22 @@ class Clasificadores:
 
     #Método de clasificación por distancia de Mahalanobis
     def metodoMahalanobis2(self, conjuntoClases, coorx, coory, coorz):
+        auxConjuntoClases = copy.deepcopy(conjuntoClases)
         conjuntoMedias = []
         distClase = []
+        
         """
         #Imprime las clases del conjunto
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             print("***********Clase ", (i+1),"***********")
-            conjuntoClases[i].imprimeDescriptor()
+            auxConjuntoClases[i].imprimeDescriptor()
             print("\n")
         """
-        auxMedia = MediaDescriptor.MediaDescriptor(conjuntoClases[0].dimension) 
+        auxMedia = MediaDescriptor.MediaDescriptor(auxConjuntoClases[0].dimension) 
 
         #Calcula e imprime las medias por cada clases
-        for i in range(len(conjuntoClases)):
-            auxMedia.calculoMedia(conjuntoClases[0].repClases, conjuntoClases[i])
+        for i in range(len(auxConjuntoClases)):
+            auxMedia.calculoMedia(auxConjuntoClases[0].repClases, auxConjuntoClases[i])
             #print("***********Media de clase ", (i+1),"***********")
             #auxMedia.imprimirMedia()
             conjuntoMedias.append(auxMedia.media)
@@ -385,32 +410,42 @@ class Clasificadores:
         covarianzas = []
         arregloRestas = []
         arregloTranspuestas = []
-        restaClase = conjuntoClases[0]
+        restaClase = auxConjuntoClases[0]
 
-        for i in range(len(conjuntoClases)):
-            for j in range(conjuntoClases[0].repClases):
-                if conjuntoClases[0].dimension == 1:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i]
+        auxVX = 0
+        auxVY = 0
+        auxVZ = 0
+        
+        for i in range(len(auxConjuntoClases)):
+            for j in range(auxConjuntoClases[0].repClases):
+                if auxConjuntoClases[0].dimension == 1:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    restaClase.vector[0][j] =  auxVX - conjuntoMedias[i]
                     continue
-                if conjuntoClases[0].dimension == 2:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
+                if auxConjuntoClases[0].dimension == 2:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
                     continue
-                if conjuntoClases[0].dimension == 3:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
-                    restaClase.vector[2][j] = conjuntoClases[i].vector[2][j] - conjuntoMedias[i][2][0] 
+                if auxConjuntoClases[0].dimension == 3:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    auxVZ = auxConjuntoClases[i].vector[2][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
+                    restaClase.vector[2][j] = auxVZ - conjuntoMedias[i][2][0] 
             arregloRestas.append(restaClase.vector)
             arregloTranspuestas.append(np.transpose(restaClase.vector))
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxVarianza = np.matmul(arregloRestas[i], arregloTranspuestas[i])
             varianzas.append(auxVarianza)
             #print(f"****VARIANZA {i+1}****")
             #print(varianzas[i])
             #print("\n")
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxCovarianza = np.linalg.inv(varianzas[i])
             covarianzas.append(auxCovarianza)
             #print(f"****COVARIANZA {i+1}****")
@@ -419,11 +454,11 @@ class Clasificadores:
 
         #Calculando la distancia de mahalanobis 
         auxMult = np.zeros((1, 1))
-        auxVector = np.zeros((conjuntoClases[0].dimension, 1))
-        auxVectorTrans = np.zeros((1, conjuntoClases[0].dimension))
+        auxVector = np.zeros((auxConjuntoClases[0].dimension, 1))
+        auxVectorTrans = np.zeros((1, auxConjuntoClases[0].dimension))
 
-        for i in range(len(conjuntoClases)):
-            if conjuntoClases[0].dimension == 1:
+        for i in range(len(auxConjuntoClases)):
+            if auxConjuntoClases[0].dimension == 1:
                 auxVector[0][0] = coorx - conjuntoMedias[i]
             if conjuntoClases[0].dimension == 2:
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
@@ -455,20 +490,20 @@ class Clasificadores:
         requiere que realizar nuevamente el cálculo de la varianza
         y la covarianza, el primer paso repite el método de Mahalanobis
         """
+        auxConjuntoClases = copy.deepcopy(conjuntoClases)
         conjuntoMedias = []
-        
         """
         #Imprime las clases del conjunto
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             print("***********Clase ", (i+1),"***********")
-            conjuntoClases[i].imprimeDescriptor()
+            auxConjuntoClases[i].imprimeDescriptor()
             print("\n")
         """
-        auxMedia = MediaDescriptor.MediaDescriptor(conjuntoClases[0].dimension) 
+        auxMedia = MediaDescriptor.MediaDescriptor(auxConjuntoClases[0].dimension) 
 
         #Calcula e imprime las medias por cada clases
-        for i in range(len(conjuntoClases)):
-            auxMedia.calculoMedia(conjuntoClases[0].repClases, conjuntoClases[i])
+        for i in range(len(auxConjuntoClases)):
+            auxMedia.calculoMedia(auxConjuntoClases[0].repClases, auxConjuntoClases[i])
             #print("***********Media de clase ", (i+1),"***********")
             #auxMedia.imprimirMedia()
             conjuntoMedias.append(auxMedia.media)
@@ -479,32 +514,42 @@ class Clasificadores:
         covarianzas = []
         arregloRestas = []
         arregloTranspuestas = []
-        restaClase = conjuntoClases[0]
+        restaClase = auxConjuntoClases[0]
 
-        for i in range(len(conjuntoClases)):
-            for j in range(conjuntoClases[0].repClases):
-                if conjuntoClases[0].dimension == 1:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i]
+        auxVX = 0
+        auxVY = 0
+        auxVZ = 0
+
+        for i in range(len(auxConjuntoClases)):
+            for j in range(auxConjuntoClases[0].repClases):
+                if auxConjuntoClases[0].dimension == 1:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    restaClase.vector[0][j] =  auxVX - conjuntoMedias[i]
                     continue
-                if conjuntoClases[0].dimension == 2:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
+                if auxConjuntoClases[0].dimension == 2:
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
                     continue
                 if conjuntoClases[0].dimension == 3:
-                    restaClase.vector[0][j] = conjuntoClases[i].vector[0][j] - conjuntoMedias[i][0][0]
-                    restaClase.vector[1][j] = conjuntoClases[i].vector[1][j] - conjuntoMedias[i][1][0]
-                    restaClase.vector[2][j] = conjuntoClases[i].vector[2][j] - conjuntoMedias[i][2][0] 
+                    auxVX = auxConjuntoClases[i].vector[0][j]
+                    auxVY = auxConjuntoClases[i].vector[1][j]
+                    auxVZ = auxConjuntoClases[i].vector[2][j]
+                    restaClase.vector[0][j] = auxVX - conjuntoMedias[i][0][0]
+                    restaClase.vector[1][j] = auxVY - conjuntoMedias[i][1][0]
+                    restaClase.vector[2][j] = auxVZ - conjuntoMedias[i][2][0] 
             arregloRestas.append(restaClase.vector)
             arregloTranspuestas.append(np.transpose(restaClase.vector))
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxVarianza = np.matmul(arregloRestas[i], arregloTranspuestas[i])
             varianzas.append(auxVarianza)
             #print(f"****VARIANZA {i+1}****")
             #print(varianzas[i])
             #print("\n")
 
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             auxCovarianza = np.linalg.inv(varianzas[i])
             covarianzas.append(auxCovarianza)
             #print(f"****COVARIANZA {i+1}****")
@@ -513,17 +558,17 @@ class Clasificadores:
 
         #Calculando el exponencial de mahalanobis
         auxMult = np.zeros((1, 1))
-        auxVector = np.zeros((conjuntoClases[0].dimension, 1))
-        auxVectorTrans = np.zeros((1, conjuntoClases[0].dimension))
+        auxVector = np.zeros((auxConjuntoClases[0].dimension, 1))
+        auxVectorTrans = np.zeros((1, auxConjuntoClases[0].dimension))
         expMaha = []
 
-        for i in range(len(conjuntoClases)):
-            if conjuntoClases[0].dimension == 1:
+        for i in range(len(auxConjuntoClases)):
+            if auxConjuntoClases[0].dimension == 1:
                 auxVector[0][0] = coorx - conjuntoMedias[i]
-            if conjuntoClases[0].dimension == 2:
+            if auxConjuntoClases[0].dimension == 2:
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
                 auxVector[1][0] = coory - conjuntoMedias[i][1][0]
-            if conjuntoClases[0].dimension == 3:     
+            if auxConjuntoClases[0].dimension == 3:     
                 auxVector[0][0] = coorx - conjuntoMedias[i][0][0]
                 auxVector[1][0] = coory - conjuntoMedias[i][1][0]
                 auxVector[2][0] = coorz - conjuntoMedias[i][2][0]
@@ -536,14 +581,14 @@ class Clasificadores:
         numerador = []
         denominador = []
         #Elevando constante e al exponente de mahalnobis
-        for i in range(len(conjuntoClases)):
+        for i in range(len(auxConjuntoClases)):
             numerador.append(exp(expMaha[i])) 
 
         #Calculando el denominador       
         auxDen1 = 0
         auxDen2 = 0
-        for i in range((len(conjuntoClases))):
-            auxDen1 = pow((2*np.pi), ((conjuntoClases[0].dimension)/2))
+        for i in range((len(auxConjuntoClases))):
+            auxDen1 = pow((2*np.pi), ((auxConjuntoClases[0].dimension)/2))
             auxDen2 = pow(np.linalg.det(varianzas[i]), 0.5)
             denominador.append(auxDen1*auxDen2)
 

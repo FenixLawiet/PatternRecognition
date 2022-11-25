@@ -5,11 +5,6 @@
     Menú principal
 """
 
-import numpy as np
-from mpl_toolkits.mplot3d import axes3d
-import matplotlib.pyplot as plt
-from math import *
-import random as r
 import Descriptor
 import MediaDescriptor
 import Clasificadores
@@ -46,8 +41,10 @@ while True:
             conjuntoC.append(x)  
         break
     
+
 while selector4=="y" or selector4=="Y":    
     y = Clasificadores.Clasificadores()
+    z = MetodosEficiencia.MetodosEficiencia()
     print("\n**************Clasificar vector ------- 1")
     print("**************Medir % de eficiencia ------- 2")
     selector1 = int(input("Ingrese una opción: "))
@@ -72,7 +69,7 @@ while selector4=="y" or selector4=="Y":
         else:
             print("ERROR. Operación no válida.")
 
-    if selector1 == 2: 
+    if selector1 == 2:
         print("\n************Método de restitución----------1")
         print("************Método de cossvalidation-------2")
         print("************Método de hold in one----------3")
@@ -80,7 +77,6 @@ while selector4=="y" or selector4=="Y":
         if selector3 != 1 and selector3 != 2 and selector3 != 3:
             print("ERROR. Operación no válida")        
         else:
-            z = MetodosEficiencia.MetodosEficiencia()
             print("\n********Euclidiano-------1")
             print("********Mahalanobis------2")
             print("********Bayes------------3")

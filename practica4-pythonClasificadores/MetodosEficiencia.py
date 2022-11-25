@@ -13,6 +13,7 @@ import random as r
 import Descriptor
 import MediaDescriptor
 import Clasificadores
+#import pandas as pd
 
 class MetodosEficiencia:
     
@@ -206,6 +207,10 @@ class MetodosEficiencia:
 
         if selectorMetodoE == 2:
             #Método de cross validation (se clasifican solo la mitad) ********************************************
+            for i in range(len(conjuntoClasesCross)):
+                print(f"*******CLASE {i+1}******** (mitad)")
+                print(conjuntoClasesCross[i].imprimeDescriptor())
+            
             if selectorMetodoC == 1:
                 #Clasificador euclidiano
                 clasificador = Clasificadores.Clasificadores()
@@ -454,6 +459,11 @@ class MetodosEficiencia:
         for i in range(len(conjuntoClases)+1):
             colors.append('#%06X' % r.randint(0, 0xFFFFFF))
         
+        """data = pd.DataFrame({'España' : [826, 943, 942, 901],
+                     'Colombia': [668, 781, 791, 813],
+                     'México': [488, 553, 563, 537]},
+                    index=('Lunes', 'Martes', 'Miercoles', 'Jueves'))
+        """
         leyendas = []
         tamaño = len(conjuntoClases)
         fig, ax = plt.subplots()
