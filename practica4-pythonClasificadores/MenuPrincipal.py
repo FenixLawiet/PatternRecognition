@@ -86,6 +86,7 @@ while selector4=="y" or selector4=="Y":
                 print("ERROR. Operación no válida")
             else:
                 z.matrizConfusion(conjuntoC, selector2, selector3)
+                z.graficaEficiencia(conjuntoC)
                 y.graficaClases(conjuntoC, 0, 0, 0)
     else:
         print("ERROR. Operación no válida")

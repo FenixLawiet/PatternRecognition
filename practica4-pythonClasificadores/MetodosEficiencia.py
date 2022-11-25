@@ -36,21 +36,13 @@ class MetodosEficiencia:
         #Para restitución
         for i in range(len(conjuntoClases)):
             auxClase = Descriptor.Descriptor()
-            #print(f"\nValores de clase {i+1}")
             coorx = conjuntoClases[i].coorx
-            #print(f"Coor x = {coorx}")
             coory = conjuntoClases[i].coory
-            #print(f"Coor y = {coory}")
             coorz = conjuntoClases[i].coorz
-            #print(f"Coor z = {coorz}")
             disp = conjuntoClases[i].disp
-            #print(f"Dispersion = {disp}")
             repClases = conjuntoClases[i].repClases
-            #print(f"Representantes = {repClases}")
             dimension = conjuntoClases[i].dimension
-            #print(f"Dimension = {dimension}")
             auxClase.crearDescriptor2(coorx, coory, coorz, disp, repClases, dimension)
-            #auxClase.imprimeDescriptor()
             conjuntoTest.append(auxClase)
 
         #Para cross validation
@@ -207,10 +199,6 @@ class MetodosEficiencia:
 
         if selectorMetodoE == 2:
             #Método de cross validation (se clasifican solo la mitad) ********************************************
-            for i in range(len(conjuntoClasesCross)):
-                print(f"*******CLASE {i+1}******** (mitad)")
-                print(conjuntoClasesCross[i].imprimeDescriptor())
-            
             if selectorMetodoC == 1:
                 #Clasificador euclidiano
                 clasificador = Clasificadores.Clasificadores()
@@ -458,15 +446,11 @@ class MetodosEficiencia:
         colors = []
         for i in range(len(conjuntoClases)+1):
             colors.append('#%06X' % r.randint(0, 0xFFFFFF))
-        
-        """data = pd.DataFrame({'España' : [826, 943, 942, 901],
-                     'Colombia': [668, 781, 791, 813],
-                     'México': [488, 553, 563, 537]},
-                    index=('Lunes', 'Martes', 'Miercoles', 'Jueves'))
-        """
-        leyendas = []
         tamaño = len(conjuntoClases)
         fig, ax = plt.subplots()
         for i in range(tamaño):
-            ax.bar(i, self.presicion[i])
+            ax.bar(i, self.presicion[i], color ='maroon', width = 0.4)
+        plt.xlabel("Clases")
+        plt.ylabel("Presición")
+        plt.title("Gráfica de eficiencia de clasificación")
         plt.show()
