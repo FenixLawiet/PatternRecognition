@@ -52,22 +52,25 @@ while selector4=="y" or selector4=="Y":
         coorx = int(input("Ingrese la coordenada x a clasificar: "))
         coory = int(input("Ingrese la coordenada y a clasificar: "))
         coorz = int(input("Ingrese la coordenada z a clasificar: "))
-        print("\n********Euclidiano-------1")
-        print("********Mahalanobis------2")
-        print("********Bayes------------3")
-        selector2 = int(input("Ingrese el método a utilizar: "))
-        print("\n")
-        if selector2 == 1:
-            y.metodoEuclides(conjuntoC, coorx, coory, coorz)
-            y.graficaClases(conjuntoC, coorx, coory, coorz)
-        elif selector2 == 2: 
-            y.metodoMahalanobis(conjuntoC, coorx, coory, coorz)
-            y.graficaClases(conjuntoC, coorx, coory, coorz)
-        elif selector2 == 3:
-            y.metodoBayes(conjuntoC, coorx, coory, coorz)
-            y.graficaClases(conjuntoC, coorx, coory, coorz)
-        else:
-            print("ERROR. Operación no válida.")
+        if coorx > 100 or coory > 100 or coorz > 100 or coorx < -100 or coory < -100 or coorz < -100:
+            print("El vector esta fuera del umbral de pertenencia, no pertenece a ninguna clase.")
+        else:     
+            print("\n********Euclidiano-------1")
+            print("********Mahalanobis------2")
+            print("********Bayes------------3")
+            selector2 = int(input("Ingrese el método a utilizar: "))
+            print("\n")
+            if selector2 == 1:
+                y.metodoEuclides(conjuntoC, coorx, coory, coorz)
+                y.graficaClases(conjuntoC, coorx, coory, coorz)
+            elif selector2 == 2: 
+                y.metodoMahalanobis(conjuntoC, coorx, coory, coorz)
+                y.graficaClases(conjuntoC, coorx, coory, coorz)
+            elif selector2 == 3:
+                y.metodoBayes(conjuntoC, coorx, coory, coorz)
+                y.graficaClases(conjuntoC, coorx, coory, coorz)
+            else:
+                print("ERROR. Operación no válida.")
 
     if selector1 == 2:
         print("\n************Método de restitución----------1")

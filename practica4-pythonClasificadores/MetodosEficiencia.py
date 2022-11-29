@@ -13,7 +13,6 @@ import random as r
 import Descriptor
 import MediaDescriptor
 import Clasificadores
-#import pandas as pd
 
 class MetodosEficiencia:
     
@@ -70,10 +69,22 @@ class MetodosEficiencia:
             
             conjuntoClasesCross.append(auxClasesCross)
 
-        #Para hold in one. Tomando solo una coordenada ALEATORIA por clase al clasificar
+        #Para hold in one. Tomando solo una coordenada ALEATORIA por clase al clasificar, se elimina del vector
         coorrandom = int(r.uniform(0, conjuntoClases[0].repClases)) #Número random entre 0 y los rep de clases
-        if coorrandom > conjuntoClases[0].repClases:
+        if coorrandom >= conjuntoClases[0].repClases:
             coorrandom = coorrandom - 1
+        auxVectorX = 0
+        auxVectorY = 0
+        auxVectorZ = 0
+        if conjuntoClases[0].dimension == 1:
+            auxVectorX = conjuntoTest[i].vector[0][coorrandom]
+        if conjuntoClases[0].dimension == 2:
+            auxVectorX = conjuntoTest[i].vector[0][coorrandom]
+            auxVectorY = conjuntoTest[i].vector[1][coorrandom]
+        if conjuntoClases[0].dimension == 3:
+            auxVectorX = conjuntoTest[i].vector[0][coorrandom]
+            auxVectorY = conjuntoTest[i].vector[1][coorrandom]
+            auxVectorZ = conjuntoTest[i].vector[2][coorrandom]        
 
         #Determinando el método de eficiencia a usar
         xAux = 0
@@ -317,109 +328,135 @@ class MetodosEficiencia:
                 #Clasificador euclidiano
                 clasificador = Clasificadores.Clasificadores()
                 for i in range(len(conjuntoTest)):   
+                    np.delete(conjuntoTest[i].vector, coorrandom, axis=1) #Para borrar un elemento aleatorio y usar n-1 elementos
+                    for j in range(conjuntoClases[0].repClases-1):
+                        if conjuntoTest[i].dimension == 1:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        if conjuntoTest[i].dimension == 2:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                                
+                        if conjuntoTest[i].dimension == 3:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            zAux = conjuntoTest[i].vector[2][j]
+                            clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                    #Una vez hecho las pruebas con los n-1 elementos, se reingresa el elemento al arreglo
                     if conjuntoTest[i].dimension == 1:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX)), 1)
                     if conjuntoTest[i].dimension == 2:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                            
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY)), 1)
                     if conjuntoTest[i].dimension == 3:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        zAux = conjuntoTest[i].vector[2][coorrandom]
-                        clasificador.metodoEuclides2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY, auxVectorZ)), 1)
             if selectorMetodoC == 2:
                 #Clasificador de mahalanobis
                 clasificador = Clasificadores.Clasificadores()
                 for i in range(len(conjuntoClases)):
+                    np.delete(conjuntoTest[i].vector, coorrandom, axis=1) #Para borrar un elemento aleatorio y usar n-1 elementos
+                    for j in range(conjuntoClases[0].repClases-1):
+                        if conjuntoTest[i].dimension == 1:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        if conjuntoTest[i].dimension == 2:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                                
+                        if conjuntoTest[i].dimension == 3:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            zAux = conjuntoTest[i].vector[2][j]
+                            clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.minClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                    
+                    #Una vez hecho las pruebas con los n-1 elementos, se reingresa el elemento al arreglo
                     if conjuntoTest[i].dimension == 1:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX)), 1)
                     if conjuntoTest[i].dimension == 2:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1 
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                            
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY)), 1)
                     if conjuntoTest[i].dimension == 3:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        zAux = conjuntoTest[i].vector[2][coorrandom]
-                        clasificador.metodoMahalanobis2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.minClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.minClase-1] = self.matrizConf[i][clasificador.minClase-1] + 1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY, auxVectorZ)), 1)          
             if selectorMetodoC == 3:
                 #Clasificador bayesiano
                 clasificador = Clasificadores.Clasificadores()
                 for i in range(len(conjuntoClases)):
+                    np.delete(conjuntoTest[i].vector, coorrandom, axis=1) #Para borrar un elemento aleatorio y usar n-1 elementos
+                    for j in range(conjuntoClases[0].repClases-1):
+                        if conjuntoTest[i].dimension == 1:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.maxClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1 
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        if conjuntoTest[i].dimension == 2:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.maxClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                                
+                        if conjuntoTest[i].dimension == 3:
+                            xAux = conjuntoTest[i].vector[0][j]
+                            yAux = conjuntoTest[i].vector[1][j]
+                            zAux = conjuntoTest[i].vector[2][j]
+                            clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
+                            if clasificador.maxClase == (i+1):
+                                self.matrizConf[i][i] = self.matrizConf[i][i]+1
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                            else:
+                                self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
+                                self.sumarepClases[i] = self.sumarepClases[i] + 1
+                    #Una vez hecho las pruebas con los n-1 elementos, se reingresa el elemento al arreglo
                     if conjuntoTest[i].dimension == 1:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.maxClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1 
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX)), 1)
                     if conjuntoTest[i].dimension == 2:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.maxClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                            
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY)), 1)
                     if conjuntoTest[i].dimension == 3:
-                        xAux = conjuntoTest[i].vector[0][coorrandom]
-                        yAux = conjuntoTest[i].vector[1][coorrandom]
-                        zAux = conjuntoTest[i].vector[2][coorrandom]
-                        clasificador.metodoBayes2(conjuntoClases, xAux, yAux, zAux)
-                        if clasificador.maxClase == (i+1):
-                            self.matrizConf[i][i] = self.matrizConf[i][i]+1
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-                        else:
-                            self.matrizConf[i][clasificador.maxClase-1] = self.matrizConf[i][clasificador.maxClase-1] + 1  
-                            self.sumarepClases[i] = self.sumarepClases[i] + 1
-
+                        np.insert(conjuntoTest[i].vector, conjuntoTest[i].vector.shape[1], np.array((auxVectorX, auxVectorY, auxVectorZ)), 1)
         #Normalizando las presiciones
         print("\n***********MATRIZ DE CONFUSIÓN***********")
         print(self.matrizConf)
@@ -449,7 +486,7 @@ class MetodosEficiencia:
         tamaño = len(conjuntoClases)
         fig, ax = plt.subplots()
         for i in range(tamaño):
-            ax.bar(i, self.presicion[i], color ='maroon', width = 0.4)
+            ax.bar(f"Clase {i+1}", self.presicion[i], color ='maroon', width = 0.4)
         plt.xlabel("Clases")
         plt.ylabel("Presición")
         plt.title("Gráfica de eficiencia de clasificación")

@@ -7,6 +7,7 @@
 
 import numpy as np
 import random
+from sklearn import preprocessing
 
 class Descriptor:
     
@@ -36,6 +37,8 @@ class Descriptor:
         self.disp = 0
         self.dimension = dimension
         self.vector = np.zeros((int(dimension), int(repClases)))        
+        vectorAux = np.zeros((int(dimension), int(repClases)))
+        
         while True:
             if dimension==1:
                 self.coorx = input("\nIngresa la coordenada x del centroide de la clase "+str(numClase+1)+": ")
@@ -58,19 +61,23 @@ class Descriptor:
             for j in range(repClases):
                 if i==0 :
                     if i==0 and j==0:
-                        self.vector[i][j]=int(self.coorx)
+                        vectorAux[i][j]=int(self.coorx)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
                 if i==1 :
                     if i==1 and j==0:
-                        self.vector[i][j]=int(self.coory)
+                        vectorAux[i][j]=int(self.coory)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
                 if i==2 :
                     if i==2 and j==0:
-                        self.vector[i][j]=int(self.coorz)
+                        vectorAux[i][j]=int(self.coorz)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))    
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))    
+
+            self.vector = vectorAux
+            #Normalizando los valores de el vector
+            #self.vector = preprocessing.scale(vectorAux)
 
     #Método para construir automáticamente un descriptor con centroide, dispersión y dimension dadas
     def crearDescriptor2(self, coorx, coory, coorz, disp, repClases, dimension):
@@ -81,25 +88,32 @@ class Descriptor:
         self.disp = disp
         self.dimension = dimension   
         self.vector = np.zeros((int(dimension), int(repClases)))
+        vectorAux = np.zeros((int(dimension), int(repClases)))
 
         #Generando el random y llenando la clase. El primer elemento siempre es el centroide
         for i in range(self.dimension): 
             for j in range(self.repClases):
                 if i==0 :
                     if i==0 and j==0:
-                        self.vector[i][j]=int(self.coorx)
+                        vectorAux[i][j]=int(self.coorx)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coorx))
                 if i==1 :
                     if i==1 and j==0:
-                        self.vector[i][j]=int(self.coory)
+                        vectorAux[i][j]=int(self.coory)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coory))
                 if i==2 :
                     if i==2 and j==0:
-                        self.vector[i][j]=int(self.coorz)
+                        vectorAux[i][j]=int(self.coorz)
                     else:
-                        self.vector[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))                
+                        vectorAux[i][j]=(random.uniform(0, int(self.disp))+int(self.coorz))                
+        
+        self.vector = vectorAux
+        #Normalizando los valores de el vector
+        #self.vector = preprocessing.scale(vectorAux)
+
+
 
     #Método para imprimir el contenido de la clase
     def imprimeDescriptor(self):
